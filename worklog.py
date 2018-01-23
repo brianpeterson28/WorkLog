@@ -2,6 +2,7 @@ import os
 from time_entry import Time_Entry
 from main_menu import Main_Menu
 from add_menu import Add_Menu
+from search_menu import Search_Menu
 
 
 def main():
@@ -10,7 +11,11 @@ def main():
         if choice == "1":
             run_add_entry_process()
         if choice == "2":
-            pass
+            search = Search_Menu()
+            search.show()
+            search_type = input("Please select a search type: ")
+            clear_screen()
+            dummy = input("Gathering search info to be implemented . . . ")
         if choice == "3":
             break
 
