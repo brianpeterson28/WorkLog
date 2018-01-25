@@ -1,5 +1,6 @@
 import csv
 import re
+from time_entry import Time_Entry
 
 TIME_ENTRY_FILE = "time_entries.csv"
 
@@ -8,10 +9,23 @@ str_time_entries = ""
 with open(TIME_ENTRY_FILE, newline="") as csvfile:
     time_entry_file = csv.reader(csvfile)
     for row in time_entry_file:
-        time_entries.append(row)
-    for item in time_entries:
-        str_time_entries += str(item)
-    print(str_time_entries)
-    variable = re.findall(r'08/06/2016', str_time_entries)
-    print(variable)
+        entry = Time_Entry()
+        entry.set_date(row[0])
+        entry.set_title(row[1])
+        entry.set_time_spent(row[2])
+        entry.set_notes(row[3])
+        time_entries.append(entry)
+#test_entry = time_entries[0]
+for index in range(len(time_entries)):
+    print(time_entries[index].date + ", " 
+          + time_entries[index].title + ", " 
+          + time_entries[index].time_spent + ", " 
+          + time_entries[index].notes)
+print("")
+print(time_entries)
+#        time_entries += str(row)
+#   print(time_entries)
+
+#variable = re.findall(r'08/06/2016', str_time_entries)
+
 
