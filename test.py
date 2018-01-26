@@ -22,6 +22,14 @@ for index in range(len(time_entries)):
           + time_entries[index].notes)
 print("")
 print(time_entries)
+print("")
+if re.match(r'08/06/2016', time_entries[2].date):
+    print("Ha ha ha! This works.")
+    print("")
+    print(time_entries[2].date + ", " 
+          + time_entries[2].title + ", " 
+          + time_entries[2].time_spent + ", " 
+          + time_entries[2].notes)
 #variable = re.findall(r'08/06/2016', str_time_entries)
 
 
