@@ -9,6 +9,8 @@ from search_menu import Search_Menu
 
 TIME_ENTRY_FILE = "time_entries.csv"
 
+
+
 def main():
     while True:
         choice = run_main_menu_process()
@@ -20,21 +22,84 @@ def main():
             search_type = input("Please select a search type: ")
             clear_screen()
             if search_type.lower() == "a":
-                print("Enter the Date")
-                exact_date = input("Please use DD/MM/YYYY: ")
-                exact_date = "r" + "\'" + exact_date + "\'"
-                with open(TIME_ENTRY_FILE, newline="") as csvfile:
-                    time_entry_file = csv.reader(csvfile)
-                #use regex groups to hit matches and regroup entries into tuples
-                #unpack tuple info back into time entry objects
-                #place time entry objects into a list 
-                #use methods of time entry objects to print them to screen
-                #print first matching entry to screen
-                #show Result of X 
-                #print available options 
-            #dummy = input("Gathering search info to be implemented . . . ")
+                run_exact_date_search_process()
         if choice == "3":
             break
+
+def run_exact_date_search_process():
+    print("Enter the Date")
+    exact_date = input("Please use DD/MM/YYYY: ")
+    time_entries = recall_time_entries()
+    matching_entries = []
+    non_matching_entries = []
+    for entry in time_entries:
+        if re.match(r'' + exact_date, entry.date):
+            matching_entries.append(entry)
+        else:
+            non_matching_entries.append(entry)
+    run_options_loop(matching_entries)
+
+def run_options_loop(matching_entries):
+    total_results = len(matching_entries)
+    count = 0
+    while True:
+        display_sr(matching_entries, count, total_results)
+        option = input("> ")
+        if option.upper() == "N":
+            try:
+                count += 1
+                matching_entries[count]
+            except IndexError:
+                count -= 1
+                clear_screen()
+            clear_screen()
+        elif option.upper() == "P":
+            count -= 1
+            if count < 0:
+                count += 1
+            clear_screen()
+        elif option.upper == "E":
+            pass
+        elif option.upper() == "D":
+            pass
+        elif option.upper() == "R":
+            pass
+        else:
+            break     
+
+def display_sr(matching_entries, count, total_results):
+    if count == 0:
+        print("Date: {}".format(matching_entries[count].date))
+        print("Title: {}".format(matching_entries[count].title))
+        print("Time Spent: {}".format(matching_entries[count].time_spent))
+        print("Notes: {}".format(matching_entries[count].notes))
+        print("")
+        print("Result {} of {}".format(count + 1, total_results))
+        print("")
+        print("[N]ext, [E]dit, [D]elete, [R]eturn to search menu")
+    elif count > 0:
+        print("Date: {}".format(matching_entries[count].date))
+        print("Title: {}".format(matching_entries[count].title))
+        print("Time Spent: {}".format(matching_entries[count].time_spent))
+        print("Notes: {}".format(matching_entries[count].notes))
+        print("")
+        print("Result {} of {}".format(count + 1, total_results))
+        print("")
+        print("[P]revious, [N]ext, [E]dit, [D]elete, [R]eturn to search menu")
+
+
+def recall_time_entries():
+    time_entries = []
+    with open(TIME_ENTRY_FILE, newline="") as csvfile:
+        time_entry_file = csv.reader(csvfile)
+        for row in time_entry_file:
+            entry = Time_Entry()
+            entry.set_date(row[0])
+            entry.set_title(row[1])
+            entry.set_time_spent(row[2])
+            entry.set_notes(row[3])
+            time_entries.append(entry)
+    return time_entries
 
 def run_main_menu_process():
     clear_screen()
