@@ -9,8 +9,6 @@ from search_menu import Search_Menu
 
 TIME_ENTRY_FILE = "time_entries.csv"
 
-
-
 def main():
     while True:
         choice = run_main_menu_process()
@@ -23,8 +21,105 @@ def main():
             clear_screen()
             if search_type.lower() == "a":
                 run_exact_date_search_process()
+            elif search_type.lower() == "b":
+                run_range_of_dates_search_process()
+            elif search_type.lower() == "c":
+                run_time_spent_process()
+            elif search_type.lower() == "d":
+                run_exact_search_process()
+            elif search_type.lower() == "e":
+                run_regex_process()
+            elif search_type.lower() == "f":
+                pass
+            else:
+                print("The search option you entered is not recognized.")
+                print("Please enter a letter corresponding to an availble" +
+                "option, e.g. \"a\"")
+                print("")
+                dummy = input("Press enter to return to main menu. ")
         if choice == "3":
             break
+
+def run_regex_process():
+    print("This will search for matches in the title and notes fields.")
+    regex_pattern = input("Enter a valid regex pattern: ")
+    time_entries = recall_time_entries()
+    matching_entries = []
+    non_matching_entries = []
+    for entry in time_entries:
+        if re.search(r'' + regex_pattern, entry.title + entry.notes):
+            matching_entries.append(entry)
+        else:
+            non_matching_entries.append(entry)
+    clear_screen()
+    if len(matching_entries) == 0:
+        print("No matching entries found.")
+        dummy = input("Press enter to continue. ")
+    else:
+        run_options_loop(matching_entries)
+
+def run_exact_search_process():
+    print("This will search for matches in the title and notes fields.")
+    search_term = input("Enter a search term: ")
+    time_entries = recall_time_entries()
+    matching_entries = []
+    non_matching_entries = []
+    for entry in time_entries:
+        if re.search(r'' + search_term, entry.title + entry.notes):
+            matching_entries.append(entry)
+        else:
+            non_matching_entries.append(entry)
+    clear_screen()
+    if len(matching_entries) == 0:
+        print("No matching entries found.")
+        dummy = input("Press enter to continue. ")
+    else:
+        run_options_loop(matching_entries)
+
+
+def run_time_spent_process():
+    print("Enter the amount of time spent")
+    time_spent = input("Please use the number of minutes (e.g. 60): ")
+    time_entries = recall_time_entries()
+    matching_entries = []
+    non_matching_entries = []
+    for entry in time_entries:
+        if int(entry.time_spent) == int(time_spent):
+            matching_entries.append(entry)
+        else:
+            non_matching_entries.append(entry)
+    clear_screen()
+    if len(matching_entries) == 0:
+        print("No matching entries found.")
+        dummy = input("Press enter to continue. ")
+    else:
+        run_options_loop(matching_entries)
+
+
+def run_range_of_dates_search_process():
+    print("Enter the Start Date of Range")
+    start_date = input("Please use DD/MM/YYYY format: ")
+    clear_screen()
+    print("Enter the End Date of Rnage")
+    end_date = input("Please use DD/MM/YYYY format: ")
+    start_date = datetime.datetime.strptime(start_date,'%d/%m/%Y')
+    end_date = datetime.datetime.strptime(end_date, '%d/%m/%Y')
+    time_entries = recall_time_entries()
+    matching_entries = []
+    non_matching_entries = []
+    for entry in time_entries:
+        entry_date = datetime.datetime.strptime(entry.date, '%d/%m/%Y')
+        if entry_date > start_date and entry_date < end_date:
+            matching_entries.append(entry)
+        else:
+            non_matching_entries.append(entry)
+    clear_screen()
+    if len(matching_entries) == 0:
+        print("No matching entries found.")
+        dummy = input("Press enter to continue. ")
+    else:
+        run_options_loop(matching_entries)
+
 
 def run_exact_date_search_process():
     print("Enter the Date")
@@ -37,7 +132,12 @@ def run_exact_date_search_process():
             matching_entries.append(entry)
         else:
             non_matching_entries.append(entry)
-    run_options_loop(matching_entries)
+    clear_screen()
+    if len(matching_entries) == 0:
+        print("No matching entries found.")
+        dummy = input("Press enter to continue. ")
+    else:
+        run_options_loop(matching_entries)
 
 def run_options_loop(matching_entries):
     total_results = len(matching_entries)
@@ -63,7 +163,7 @@ def run_options_loop(matching_entries):
         elif option.upper() == "D":
             pass
         elif option.upper() == "R":
-            pass
+            break
         else:
             break     
 
