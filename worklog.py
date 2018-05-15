@@ -93,7 +93,7 @@ def run_time_spent_process():
         print("No matching entries found.")
         dummy = input("Press enter to continue. ")
     else:
-        run_options_loop(matching_entries)
+        run_options_loop(matching_entries, non_matching_entries)
 
 
 def run_range_of_dates_search_process():
@@ -139,7 +139,7 @@ def run_exact_date_search_process():
     else:
         run_options_loop(matching_entries)
 
-def run_options_loop(matching_entries):
+def run_options_loop(matching_entries, non_matching_entries):
     total_results = len(matching_entries)
     count = 0
     while True:
@@ -158,14 +158,65 @@ def run_options_loop(matching_entries):
             if count < 0:
                 count += 1
             clear_screen()
-        elif option.upper == "E":
-            pass
+        elif option.upper() == "E":
+            clear_screen()
+            while True:
+                print("What field would you like to edit?")
+                print("Please type \"date\", \"title\", \"time spent\", or " + 
+                      "\"notes\".")
+                print("")
+                edit_selection = input("> ")
+                clear_screen()
+                edit_selection.lower().strip()
+                if edit_selection == "date":
+                    print("Enter a new date.")
+                    print("Please use DD/MM/YYYY format.")
+                    new_date = input("> ")
+                    matching_entries[count].set_date(new_date)
+                    save_edited_entry(matching_entries, non_matching_entries) 
+                    clear_screen()
+                    break
+                elif edit_selection == "title":
+                    dummy = input("Press enter.")
+                    break
+                elif edit_selection == "time spent":
+                    dummy = input("Press enter.")
+                    break
+                elif edit_selection == "notes":
+                    dummy = input("Press enter.")
+                    break
+                else:
+                    print("The field you entered is not recognized.")
+                    dummy = input("Press enter to try again.")
+                    clear_screen()
         elif option.upper() == "D":
             pass
         elif option.upper() == "R":
             break
         else:
             break     
+
+def save_edited_entry(matching_entries, non_matching_entries):
+    edited_entries = matching_entries + non_matching_entries
+    first = create_iterable_entry(edited_entries.pop(0))
+
+    with open(TIME_ENTRY_FILE, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(first)
+
+    with open(TIME_ENTRY_FILE, "a", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        for entry in edited_entries:
+            entry = create_iterable_entry(entry)
+            writer.writerow(entry)
+
+def create_iterable_entry(entry):
+    iterable_entry = []
+    iterable_entry.append(entry.date)
+    iterable_entry.append(entry.title)
+    iterable_entry.append(entry.time_spent)
+    iterable_entry.append(entry.notes)
+    return iterable_entry
 
 def display_sr(matching_entries, count, total_results):
     if count == 0:
