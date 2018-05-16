@@ -175,21 +175,51 @@ def run_options_loop(matching_entries, non_matching_entries):
                     matching_entries[count].set_date(new_date)
                     save_edited_entry(matching_entries, non_matching_entries) 
                     clear_screen()
+                    print("New Date Saved!")
+                    dummy = input("Press Enter to Continue.")
+                    clear_screen()
                     break
                 elif edit_selection == "title":
-                    dummy = input("Press enter.")
+                    new_title = input("Enter a new title. > ")
+                    matching_entries[count].set_title(new_title)
+                    save_edited_entry(matching_entries, non_matching_entries)
+                    clear_screen()
+                    print("New Title Saved!")
+                    dummy = input("Press Enter to Continue.")
+                    clear_screen()
                     break
                 elif edit_selection == "time spent":
-                    dummy = input("Press enter.")
+                    new_time_spent = input("Enter new time spent. > ")
+                    matching_entries[count].set_time_spent(new_time_spent)
+                    save_edited_entry(matching_entries, non_matching_entries)
+                    clear_screen()
+                    print("New Amount of Time Saved!")
+                    dummy = input("Press Enter to Continue.")
                     break
                 elif edit_selection == "notes":
-                    dummy = input("Press enter.")
+                    new_notes = input("Enter new notes. > ")
+                    matching_entries[count].set_notes(new_notes)
+                    save_edited_entry(matching_entries, non_matching_entries)
+                    clear_screen()
+                    print("New Notes Saved!")
+                    dummy = input("Press Enter to Continue.")
                     break
                 else:
                     print("The field you entered is not recognized.")
                     dummy = input("Press enter to try again.")
                     clear_screen()
         elif option.upper() == "D":
+            print("WARNING: This will delete the selected entry.")
+            answer = input("Are you sure you want to proceed (Y/N)? > ")
+            if answer.strip().lower() == "y":
+                del matching_entries[count]
+                clear_screen()
+                print("Entry Deleted.")
+                dummy = input("Press Enter to Continue.")
+                clear_screen()
+                break
+            else:
+                print()
             pass
         elif option.upper() == "R":
             break
@@ -266,6 +296,7 @@ def run_add_entry_process():
     add.show()
     print("Date of the Task")
     date = input("Please use DD/MM/YYYY format: ")
+    date = validate_date(date)
     entry.set_date(date)
     clear_screen()
     add.show()
@@ -273,7 +304,8 @@ def run_add_entry_process():
     entry.set_title(title)
     clear_screen()
     add.show()
-    time_spent = input("Time spent (rounded in minutes): ")
+    time_spent = input("Time spent (rounded in minutes, e.g. 30): ")
+    time_spent = validate_time_spent(time_spent)
     entry.set_time_spent(time_spent)
     clear_screen()
     add.show()
@@ -283,6 +315,31 @@ def run_add_entry_process():
     clear_screen()
     input("The entry has been added! Press enter to return to main menu.")
     clear_screen()
+
+def validate_date(date):
+    date.strip()
+    while True:
+        try:
+            datetime.datetime.strptime(date,'%d/%m/%Y')
+            break
+        except ValueError:
+            clear_screen()
+            print("The date must be in DD/MM/YYYY fromat.")
+            date = input("Please re-enter the date. > ")
+            date.strip()
+    return date
+
+def validate_time_spent(time_spent):
+    time_spent.strip()
+    while True:
+        try:
+            int(time_spent)
+            break
+        except ValueError:
+            print("The time spent must be an integer (e.g. 30, 60, or 120).")
+            time_spent = input("Please re-enter time. > ")
+            time_spent.strip()
+    return time_spent
 
 def clear_screen():
     """Clears the screen of all prior input and output."""
