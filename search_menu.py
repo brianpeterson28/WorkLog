@@ -1,8 +1,11 @@
 from screen import Screen
 
+
 class Search_Menu(Screen):
 
     def __init__(self):
+        """Initializes Search_Menu class."""
+
         self.title = "Work Log Program - Search Menu"
         self.options = ["a) Exact Date",
                         "b) Range of Dates",
@@ -12,6 +15,8 @@ class Search_Menu(Screen):
                         "f) Return to Main Menu"]
 
     def show(self):
+        """Displays the content of the Search_Menu class."""
+
         print(self.title)
         print("")
         print("Available Search Types:")

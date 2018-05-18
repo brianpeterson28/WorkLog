@@ -9,7 +9,14 @@ from search_menu import Search_Menu
 
 TIME_ENTRY_FILE = "time_entries.csv"
 
+
 def main():
+    """Executes core program logic.
+
+    User can search existing entries through a variety of search options or can
+    add a new entry. The core program logic repeats until user exits program.
+    """
+
     while True:
         choice = run_main_menu_process()
         if choice == "1":
@@ -34,13 +41,20 @@ def main():
             else:
                 print("The search option you entered is not recognized.")
                 print("Please enter a letter corresponding to an availble" +
-                "option, e.g. \"a\"")
+                      "option, e.g. \"a\"")
                 print("")
                 dummy = input("Press enter to return to main menu. ")
         if choice == "3":
             break
 
+
 def run_regex_process():
+    """Executes regex search on entries.
+
+    Asks user to enter regex pattern. Returns list of matching entries. If
+    there are no matches then user is informed of that fact.
+    """
+
     print("This will search for matches in the title and notes fields.")
     regex_pattern = input("Enter a valid regex pattern: ")
     time_entries = recall_time_entries()
@@ -56,9 +70,16 @@ def run_regex_process():
         print("No matching entries found.")
         dummy = input("Press enter to continue. ")
     else:
-        run_options_loop(matching_entries)
+        run_options_loop(matching_entries, non_matching_entries)
+
 
 def run_exact_search_process():
+    """Executes exact string search on existing entries.
+
+    Asks user for an exact string to match against. Returns a list of matching
+    entries. If there are no matches then user is informed of that fact.
+    """
+
     print("This will search for matches in the title and notes fields.")
     search_term = input("Enter a search term: ")
     time_entries = recall_time_entries()
@@ -74,12 +95,19 @@ def run_exact_search_process():
         print("No matching entries found.")
         dummy = input("Press enter to continue. ")
     else:
-        run_options_loop(matching_entries)
+        run_options_loop(matching_entries, non_matching_entries)
 
 
 def run_time_spent_process():
+    """Executes time spent search on existing entries.
+
+    Asks user for a time amount. Returns a list of matching entries. If there
+    are no matches then user is informed of that fact.
+    """
+
     print("Enter the amount of time spent")
     time_spent = input("Please use the number of minutes (e.g. 60): ")
+    time_spent = validate_time_spent(time_spent)
     time_entries = recall_time_entries()
     matching_entries = []
     non_matching_entries = []
@@ -97,12 +125,20 @@ def run_time_spent_process():
 
 
 def run_range_of_dates_search_process():
+    """Executes range of date search on existing entries.
+
+    Asks user for range of dates. Returns a list of matching entries. If there
+    are no matches then user is informed of that fact.
+    """
+
     print("Enter the Start Date of Range")
     start_date = input("Please use DD/MM/YYYY format: ")
+    start_date = validate_date(start_date)
     clear_screen()
     print("Enter the End Date of Rnage")
     end_date = input("Please use DD/MM/YYYY format: ")
-    start_date = datetime.datetime.strptime(start_date,'%d/%m/%Y')
+    end_date = validate_date(end_date)
+    start_date = datetime.datetime.strptime(start_date, '%d/%m/%Y')
     end_date = datetime.datetime.strptime(end_date, '%d/%m/%Y')
     time_entries = recall_time_entries()
     matching_entries = []
@@ -118,12 +154,19 @@ def run_range_of_dates_search_process():
         print("No matching entries found.")
         dummy = input("Press enter to continue. ")
     else:
-        run_options_loop(matching_entries)
+        run_options_loop(matching_entries, non_matching_entries)
 
 
 def run_exact_date_search_process():
+    """Executes exact date search on existing entries.
+
+    Asks user for an exact date. Returns a list of matching entries. If there
+    no matches then user is informed of that fact.
+    """
+
     print("Enter the Date")
     exact_date = input("Please use DD/MM/YYYY: ")
+    exact_date = validate_date(exact_date)
     time_entries = recall_time_entries()
     matching_entries = []
     non_matching_entries = []
@@ -137,9 +180,15 @@ def run_exact_date_search_process():
         print("No matching entries found.")
         dummy = input("Press enter to continue. ")
     else:
-        run_options_loop(matching_entries)
+        run_options_loop(matching_entries, non_matching_entries)
+
 
 def run_options_loop(matching_entries, non_matching_entries):
+    """Allows user to view and perform operations on matching entries.
+
+    matching_entries and non_matching_entries are lists of time entry objects.
+    """
+
     total_results = len(matching_entries)
     count = 0
     while True:
@@ -162,7 +211,7 @@ def run_options_loop(matching_entries, non_matching_entries):
             clear_screen()
             while True:
                 print("What field would you like to edit?")
-                print("Please type \"date\", \"title\", \"time spent\", or " + 
+                print("Please type \"date\", \"title\", \"time spent\", or " +
                       "\"notes\".")
                 print("")
                 edit_selection = input("> ")
@@ -172,8 +221,9 @@ def run_options_loop(matching_entries, non_matching_entries):
                     print("Enter a new date.")
                     print("Please use DD/MM/YYYY format.")
                     new_date = input("> ")
+                    new_date = validate_date(new_date)
                     matching_entries[count].set_date(new_date)
-                    save_edited_entry(matching_entries, non_matching_entries) 
+                    save_edited_entry(matching_entries, non_matching_entries)
                     clear_screen()
                     print("New Date Saved!")
                     dummy = input("Press Enter to Continue.")
@@ -190,11 +240,13 @@ def run_options_loop(matching_entries, non_matching_entries):
                     break
                 elif edit_selection == "time spent":
                     new_time_spent = input("Enter new time spent. > ")
+                    new_time_spent = validate_time_spent(new_time_spent)
                     matching_entries[count].set_time_spent(new_time_spent)
                     save_edited_entry(matching_entries, non_matching_entries)
                     clear_screen()
                     print("New Amount of Time Saved!")
                     dummy = input("Press Enter to Continue.")
+                    clear_screen()
                     break
                 elif edit_selection == "notes":
                     new_notes = input("Enter new notes. > ")
@@ -203,16 +255,19 @@ def run_options_loop(matching_entries, non_matching_entries):
                     clear_screen()
                     print("New Notes Saved!")
                     dummy = input("Press Enter to Continue.")
+                    clear_screen()
                     break
                 else:
                     print("The field you entered is not recognized.")
                     dummy = input("Press enter to try again.")
                     clear_screen()
         elif option.upper() == "D":
+            clear_screen()
             print("WARNING: This will delete the selected entry.")
             answer = input("Are you sure you want to proceed (Y/N)? > ")
             if answer.strip().lower() == "y":
                 del matching_entries[count]
+                save_edited_entry(matching_entries, non_matching_entries)
                 clear_screen()
                 print("Entry Deleted.")
                 dummy = input("Press Enter to Continue.")
@@ -224,9 +279,16 @@ def run_options_loop(matching_entries, non_matching_entries):
         elif option.upper() == "R":
             break
         else:
-            break     
+            clear_screen()
+            print("Command not recognized.")
+            print("Please enter N, P, E, D, or R.")
+            dummy = input("Press enter to continue viewing search results.")
+            clear_screen()
+
 
 def save_edited_entry(matching_entries, non_matching_entries):
+    """Saves edited entries to csv file."""
+
     edited_entries = matching_entries + non_matching_entries
     first = create_iterable_entry(edited_entries.pop(0))
 
@@ -240,7 +302,14 @@ def save_edited_entry(matching_entries, non_matching_entries):
             entry = create_iterable_entry(entry)
             writer.writerow(entry)
 
+
 def create_iterable_entry(entry):
+    """Makes entry object an iterable list.
+
+    This is a helper function that converts a time entry object into a list
+    containing the entry's fields. This is done so csv.writer can handle it.
+    """
+
     iterable_entry = []
     iterable_entry.append(entry.date)
     iterable_entry.append(entry.title)
@@ -248,7 +317,14 @@ def create_iterable_entry(entry):
     iterable_entry.append(entry.notes)
     return iterable_entry
 
+
 def display_sr(matching_entries, count, total_results):
+    """Displays matching search results.
+
+    This function controls the display of information for matching time
+    entries. It also displays operations the user can perform.
+    """
+
     if count == 0:
         print("Date: {}".format(matching_entries[count].date))
         print("Title: {}".format(matching_entries[count].title))
@@ -270,6 +346,12 @@ def display_sr(matching_entries, count, total_results):
 
 
 def recall_time_entries():
+    """Reads previously saved entries into program.
+
+    Opens the designated csv file, reads its contents, and loads all of them
+    into a list that can be used by program.
+    """
+
     time_entries = []
     with open(TIME_ENTRY_FILE, newline="") as csvfile:
         time_entry_file = csv.reader(csvfile)
@@ -282,7 +364,10 @@ def recall_time_entries():
             time_entries.append(entry)
     return time_entries
 
+
 def run_main_menu_process():
+    """Displays contents of main menu."""
+
     clear_screen()
     main = Main_Menu()
     main.show()
@@ -290,7 +375,14 @@ def run_main_menu_process():
     clear_screen()
     return main_result
 
+
 def run_add_entry_process():
+    """Creates new time entry and saves to csv file.
+
+    Obtains field information from user, creates new time entry object, and
+    then saves the entry's information into the csv file.
+    """
+
     entry = Time_Entry()
     add = Add_Menu()
     add.show()
@@ -316,11 +408,18 @@ def run_add_entry_process():
     input("The entry has been added! Press enter to return to main menu.")
     clear_screen()
 
+
 def validate_date(date):
+    """Validates date input from user.
+
+    Ensures that user enters a string for the date that follows DD/MM/YYYY
+    format.
+    """
+
     date.strip()
     while True:
         try:
-            datetime.datetime.strptime(date,'%d/%m/%Y')
+            datetime.datetime.strptime(date, '%d/%m/%Y')
             break
         except ValueError:
             clear_screen()
@@ -329,22 +428,31 @@ def validate_date(date):
             date.strip()
     return date
 
+
 def validate_time_spent(time_spent):
+    """Validates time spent input from user.
+
+    Ensures that user enters an integer string for time spent amount.
+    """
+
     time_spent.strip()
     while True:
         try:
             int(time_spent)
             break
         except ValueError:
+            clear_screen()
             print("The time spent must be an integer (e.g. 30, 60, or 120).")
             time_spent = input("Please re-enter time. > ")
             time_spent.strip()
     return time_spent
 
+
 def clear_screen():
     """Clears the screen of all prior input and output."""
 
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 if __name__ == "__main__":
     main()
