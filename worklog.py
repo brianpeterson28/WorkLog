@@ -163,11 +163,15 @@ def run_exact_date_search_process():
     Asks user for an exact date. Returns a list of matching entries. If there
     no matches then user is informed of that fact.
     """
-
-    print("Enter the Date")
+    time_entries = recall_time_entries()
+    available_dates = []
+    print("The available dates are: \n")
+    for entry in time_entries:
+        print("\t" + entry.date)
+    print("")
+    print("Enter the Date you would like to view.")
     exact_date = input("Please use DD/MM/YYYY: ")
     exact_date = validate_date(exact_date)
-    time_entries = recall_time_entries()
     matching_entries = []
     non_matching_entries = []
     for entry in time_entries:
