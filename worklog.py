@@ -164,14 +164,13 @@ def run_exact_date_search_process():
     no matches then user is informed of that fact.
     """
     time_entries = recall_time_entries()
-    available_dates = []
     print("The available dates are: \n")
     for entry in time_entries:
         print("\t" + entry.date)
     print("")
     print("Enter the Date you would like to view.")
     exact_date = input("Please use DD/MM/YYYY: ")
-    exact_date = validate_date(exact_date)
+    exact_date = validate_date_eds(exact_date, time_entries)
     matching_entries = []
     non_matching_entries = []
     for entry in time_entries:
@@ -428,6 +427,30 @@ def validate_date(date):
         except ValueError:
             clear_screen()
             print("The date must be in DD/MM/YYYY fromat.")
+            date = input("Please re-enter the date. > ")
+            date.strip()
+    return date
+
+
+def validate_date_eds(date, time_entries):
+    """Validates date input from user.
+
+    Ensures that user enters a string for the date that follows DD/MM/YYYY
+    format. Separate version for exact date search so that available dates are
+    re-displayed.
+    """
+
+    date.strip()
+    while True:
+        try:
+            datetime.datetime.strptime(date, '%d/%m/%Y')
+            break
+        except ValueError:
+            clear_screen()
+            print("The date must be in DD/MM/YYYY format.")
+            print("The available dates are: \n")
+            for entry in time_entries:
+                print("\t" + entry.date)
             date = input("Please re-enter the date. > ")
             date.strip()
     return date
